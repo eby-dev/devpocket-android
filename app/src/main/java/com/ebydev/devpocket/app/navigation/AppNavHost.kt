@@ -5,6 +5,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -22,9 +36,19 @@ fun AppNavHost(viewModel: DevPocketViewModel = viewModel()) {
     val state by viewModel.state.collectAsState()
     val navController = rememberNavController()
 
+    if (state.isRestoringSession) {
+        SessionRestoringScreen()
+        return
+    }
+
     LaunchedEffect(state.user?.id) {
         if (state.user != null) {
-            navController.navigate("library") { popUpTo("auth") { inclusive = true }; launchSingleTop = true }
+            if (navController.currentBackStackEntry?.destination?.route != "library") {
+                navController.navigate("library") {
+                    popUpTo("auth") { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
         } else if (navController.currentBackStackEntry?.destination?.route == "library") {
             navController.navigate("auth") { popUpTo("library") { inclusive = true }; launchSingleTop = true }
         }
@@ -32,7 +56,11 @@ fun AppNavHost(viewModel: DevPocketViewModel = viewModel()) {
 
     NavHost(navController = navController, startDestination = "auth") {
         composable("auth") {
-            AuthScreen(state = state, onLogin = viewModel::login, onRegister = viewModel::register)
+            if (state.user != null) {
+                SessionRestoringScreen()
+            } else {
+                AuthScreen(state = state, onLogin = viewModel::login, onRegister = viewModel::register)
+            }
         }
         composable("library") {
             LibraryScreen(
@@ -80,6 +108,24 @@ fun AppNavHost(viewModel: DevPocketViewModel = viewModel()) {
                 onBack = { navController.popBackStack() },
                 onSave = { input -> viewModel.saveNote(id, input) { navController.popBackStack() } },
             )
+        }
+    }
+}
+
+@Composable
+private fun SessionRestoringScreen() {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background,
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                Text("DevPocket", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(16.dp))
+                CircularProgressIndicator()
+                Spacer(Modifier.height(12.dp))
+                Text("Restoring your session…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
     }
 }
