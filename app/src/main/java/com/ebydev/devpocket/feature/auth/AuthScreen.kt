@@ -45,7 +45,7 @@ fun AuthScreen(
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 28.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            Text("DP /", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+            Text("DEVELOPER KNOWLEDGE, POCKET-SIZED", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(14.dp))
             Text("DevPocket", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(8.dp))
