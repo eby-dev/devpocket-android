@@ -1,0 +1,6 @@
+# Copy to appwrite.properties and fill in values from your Appwrite Cloud project.
+# These are client configuration identifiers, never a server API key.
+endpoint=https://<REGION>.cloud.appwrite.io/v1
+projectId=<PROJECT_ID>
+databaseId=<DATABASE_ID>
+tableId=<TABLE_ID>
